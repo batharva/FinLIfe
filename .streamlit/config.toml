@@ -1,0 +1,32 @@
+# Native widgets follow the visitor's OS theme through these two sections.
+# FinLife's own components and the explicit Light/Dark choice in Settings are handled in components/theme.py.
+[theme.light]
+primaryColor = "#2563EB"
+backgroundColor = "#F4F8FF"
+secondaryBackgroundColor = "#EAF2FF"
+textColor = "#172B4D"
+borderColor = "#DCE6F3"
+font = "sans-serif"
+[theme.light.sidebar]
+backgroundColor = "#FFFFFF"
+
+[theme.dark]
+primaryColor = "#60A5FA"
+backgroundColor = "#0B1220"
+secondaryBackgroundColor = "#17263D"
+textColor = "#F1F5F9"
+borderColor = "#263750"
+font = "sans-serif"
+[theme.dark.sidebar]
+backgroundColor = "#111C2F"
+
+[server]
+headless = true
+enableXsrfProtection = true
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"
+showSidebarNavigation = false
