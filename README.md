@@ -1,121 +1,323 @@
-# FinLife
+# 💸 FinLife — Personal Finance Management
 
-*Understand your money. Design your future.*
+<p align="center">
+  <strong>Take control of your money. Build better financial habits.</strong>
+</p>
 
-A multi-user personal finance and financial-goal planning app built with **Streamlit**, **Supabase** (PostgreSQL + Auth), **pandas** and **Plotly**. Users register, verify their email (or use Google), record income and spending, set budgets and goals, explore educational investment scenarios, and track emergency fund and net worth. All data is stored per user in PostgreSQL with Row Level Security.
+<p align="center">
+  <a href="https://iatharvab-finlife.streamlit.app/">
+    <img src="https://img.shields.io/badge/Live%20Demo-Open%20FinLife-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Live Demo"/>
+  </a>
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
+  <img src="https://img.shields.io/badge/Streamlit-App-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit"/>
+  <img src="https://img.shields.io/badge/Supabase-Backend-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase"/>
+</p>
+
+**FinLife** is a personal finance management web application built with Python, Streamlit, and Supabase. It helps users organize their finances, track income and expenses, manage budgets, plan financial goals, and monitor their financial progress from one place.
+
+🌐 **Live Application:** [iatharvab-finlife.streamlit.app](https://iatharvab-finlife.streamlit.app/)
 
 ---
 
-## Honest status
+## 📌 Table of Contents
 
-| Area | State |
+- [Overview](#-overview)
+- [Features](#-features)
+- [Technology Stack](#-technology-stack)
+- [Application Architecture](#-application-architecture)
+- [Database Design](#-database-design)
+- [Getting Started](#-getting-started)
+- [Environment Configuration](#-environment-configuration)
+- [Database Setup](#-database-setup)
+- [Deployment](#-deployment)
+- [Security](#-security)
+- [Future Improvements](#-future-improvements)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+## 🚀 Overview
+
+Managing personal finances can become complicated when transactions, accounts, budgets, savings, and investments are tracked separately.
+
+FinLife brings these activities together in a centralized application designed to make financial tracking more organized and accessible.
+
+The project combines an interactive Streamlit interface with Supabase authentication and a PostgreSQL database to provide persistent, user-specific financial data.
+
+### Project Goals
+
+- Simplify personal income and expense tracking.
+- Improve visibility into spending habits.
+- Organize finances using accounts and categories.
+- Help users create budgets and financial goals.
+- Track assets, liabilities, and investment scenarios.
+- Provide a foundation for future financial analytics.
+
+## ✨ Features
+
+### 💰 Financial Tracking
+- Record income, expenses, investments, transfers, and refunds.
+- Organize transactions using financial categories.
+- Associate transactions with individual accounts.
+- Store transaction dates, payment methods, and notes.
+- Support recurring transaction records.
+
+### 📊 Budget Management
+- Create and manage monthly budgets.
+- Associate budgets with expense categories.
+- Configure budget warning thresholds.
+- Track spending against budget limits.
+
+### 🎯 Financial Goal Planning
+- Create goals for savings, education, travel, retirement, and other objectives.
+- Define target amounts and target dates.
+- Track allocated amounts and goal contributions.
+- Organize goals by priority and status.
+
+### 📈 Investment Planning
+- Create investment scenarios.
+- Configure initial investments and monthly contributions.
+- Set investment horizons and assumed returns.
+- Compare conservative, moderate, and aggressive risk profiles.
+
+### 🏦 Accounts and Net Worth
+- Organize bank accounts, cash, wallets, credit cards, and other account types.
+- Record opening balances.
+- Track assets and liabilities.
+- Maintain valuation history for net-worth analysis.
+
+### 👤 User Accounts and Preferences
+- Authenticate users through Supabase.
+- Maintain user-specific profiles.
+- Store currency and theme preferences.
+- Configure needs, wants, and savings allocation percentages.
+
+> Feature availability depends on the deployed application version and its database configuration.
+
+## 🛠️ Technology Stack
+
+| Technology | Purpose |
 |---|---|
-| Financial logic, CSV, repository ownership rules, recurring posting, auth guards, UI rendering of all 10 pages, form writes | **Implemented and covered by 60 automated tests (all passing)** |
-| Visual check in Chromium (light, dark, explicit-dark on a light OS) | **Done on Overview, Transactions, Analytics, Goals, Investment Planner** with a stubbed login. Budgets, Net Worth, Reports, Settings render in tests but I did not eyeball them |
-| Supabase email/password, Google OAuth, password reset, session restore | **Implemented against the documented Supabase Auth APIs but NOT exercised against a live project** (no credentials were available). You must run the checklist in "Acceptance checklist" below |
-| Row Level Security + cross-user isolation in PostgreSQL | **SQL written; not applied to a live database by me.** `tests/test_rls_integration.py` verifies it against a real project when you provide two test users |
-| Deployment to Streamlit Community Cloud | **Not deployed** |
+| Python | Application logic and backend operations |
+| Streamlit | Interactive web application interface |
+| Supabase Auth | User authentication |
+| PostgreSQL | Relational database |
+| Supabase Data API | Database access from the application |
+| SQL | Schema, constraints, indexes, triggers, and access policies |
+| Git and GitHub | Version control and source code management |
+| Streamlit Community Cloud | Application hosting |
 
-Nothing here claims more than the table says.
+## 🏗️ Application Architecture
 
-## Features
+FinLife uses a layered architecture:
 
-Overview dashboard (real data only, onboarding state when empty), transactions (add / edit / delete / duplicate / search / filter / sort, recurring templates, CSV import with duplicate protection, CSV export), budgets with 75/90/100% alerts and needs-wants-savings targets, analytics (1 to 12 months and custom ranges, a detailed review after 3 months of data, rule-based observations that cite their figures), goals with inflation-adjusted targets, monthly requirement, feasibility against your actual surplus and number-backed options when a goal is unaffordable, explicit allocation of savings to goals, an educational investment planner (lower/middle/higher scenarios, fees, horizon-aware guidance, no guarantees, no trades), emergency fund planner, net worth with manual valuations and history, reports (CSV and printable HTML), settings (profile, currency, Light/Dark/System theme saved to your profile, accounts, categories, data erase).
-
-**Accounting rules** (see `services/finance.py`): transfers and credit-card bill payments are neutral; investments are allocations, not consumption; card purchases count when made; refunds reduce spending in their category; cash flow, consumption, balances and net worth are kept distinct. "Insights" are simple rules on your own numbers, not machine learning.
-
-## Project layout
-
+```text
+                 ┌──────────────────────┐
+                 │       User           │
+                 └──────────┬───────────┘
+                            │
+                            ▼
+                 ┌──────────────────────┐
+                 │   Streamlit UI       │
+                 │  app.py / views      │
+                 └──────────┬───────────┘
+                            │
+                            ▼
+                 ┌──────────────────────┐
+                 │   Service / Data     │
+                 │   Access Layer       │
+                 └──────────┬───────────┘
+                            │
+                  ┌─────────┴─────────┐
+                  ▼                   ▼
+        ┌────────────────┐  ┌────────────────┐
+        │ Supabase Auth  │  │ Supabase Data  │
+        │ Authentication │  │ API / Postgres │
+        └────────────────┘  └────────────────┘
 ```
-app.py                  entry point, auth gate, sidebar navigation
-views/                  one module per page (named views/, not pages/, so Streamlit's
-                        auto-routing can never expose a page before the auth gate runs)
-components/             theme (CSS tokens + Plotly layout), ui helpers, charts, context
-services/               auth.py, repo.py (DB layer), data.py (cached loading), finance.py (pure maths),
-                        csvio.py, recurring.py, config.py
-database/schema.sql     tables, constraints, indexes, triggers, RLS policies
-tests/                  pytest suite (+ in-memory fakes and a UI harness)
-.streamlit/             config.toml (theme), secrets.toml.example
-```
 
-## 1. Supabase setup
+The Streamlit application handles the user interface, while Supabase provides authentication and persistent database storage.
 
-1. Create a project at supabase.com. Note **Project URL** and the **publishable / anon key** (Settings > API). **Never use or commit the `service_role` key**; FinLife does not need it.
-2. SQL Editor: paste and run `database/schema.sql` (re-runnable). It creates all tables, composite `(id, user_id)` foreign keys (a row can never reference another user's account/category), RLS policies (`user_id = auth.uid()` for every operation, with `WITH CHECK`), a trigger that creates each profile on sign-up, and revokes table access from the `anon` role.
-3. Authentication > Providers > **Email**: enable; keep **Confirm email** on (this is what sends the verification email).
-4. Authentication > URL Configuration:
-   - **Site URL**: your app URL, e.g. `https://YOUR-APP.streamlit.app`
-   - **Redirect URLs**: add `https://YOUR-APP.streamlit.app/**` and, for local work, `http://localhost:8501/**`. The `/**` wildcard is required because FinLife appends `?flow=...&n=...` to the redirect.
-5. (Recommended) Authentication > Emails: brand the templates. Password-reset and OAuth use PKCE, so no token ever appears in a URL.
+## 🗄️ Database Design
 
-## 2. Google sign-in
+The database schema is defined in [`database/schema.sql`](database/schema.sql).
 
-1. Google Cloud Console > APIs & Services > **OAuth consent screen**: configure (External), add your app name and support email.
-2. **Credentials > Create credentials > OAuth client ID > Web application**.
-   - **Authorized JavaScript origins**: your app origin (`https://YOUR-APP.streamlit.app`, and `http://localhost:8501` for local).
-   - **Authorized redirect URIs**: the Supabase callback, exactly `https://YOUR-PROJECT-REF.supabase.co/auth/v1/callback`. (Google redirects to *Supabase*, which then redirects to your app. Do not put the Streamlit URL here.)
-3. Copy the client ID and secret into Supabase > Authentication > Providers > **Google** and enable it. The secret lives only in Supabase, never in this code base.
-4. Set `GOOGLE_LOGIN_ENABLED = "0"` in secrets to hide the button until Google is configured.
+| Table | Purpose |
+|---|---|
+| `profiles` | User preferences and profile information |
+| `accounts` | Financial account records |
+| `categories` | Transaction and financial classifications |
+| `transactions` | Income, expense, transfer, and investment records |
+| `budgets` | Monthly budget allocations |
+| `financial_goals` | Financial targets and progress |
+| `goal_contributions` | Contributions and withdrawals associated with goals |
+| `investment_plans` | Investment scenario assumptions |
+| `assets_and_liabilities` | Asset and liability valuations |
+| `recurring_transactions` | Scheduled or recurring financial records |
 
-Notes: the "Continue with Google" button opens in a new tab (Streamlit's link button); you finish signing in there. Google users and email users are separate Supabase identities unless you enable account linking in Supabase.
+The schema also defines relationships, indexes, update triggers, profile creation on signup, and Row Level Security (RLS) policies.
 
-## 3. Run locally
+## ⚙️ Getting Started
+
+### Prerequisites
+
+Before running FinLife locally, make sure you have:
+
+- Python installed.
+- Git installed.
+- A Supabase project.
+- Access to the project's Supabase URL and publishable or legacy `anon` API key.
+
+### 1. Clone the Repository
 
 ```bash
-python -m venv .venv && source .venv/bin/activate      # Python 3.11+
+git clone https://github.com/batharva/FinLife.git
+cd FinLife
+```
+
+Replace the repository URL if your actual GitHub repository uses a different owner or name.
+
+### 2. Create a Virtual Environment
+
+**Windows:**
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+**macOS / Linux:**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
 pip install -r requirements.txt
-cp .streamlit/secrets.toml.example .streamlit/secrets.toml   # or: cp .env.example .env
-# fill in SUPABASE_URL, SUPABASE_ANON_KEY, APP_URL=http://localhost:8501
+```
+
+### 4. Configure Secrets
+
+Create a file named `.streamlit/secrets.toml` in the project root.
+
+```toml
+SUPABASE_URL = "https://YOUR-PROJECT-REF.supabase.co"
+SUPABASE_ANON_KEY = "YOUR_PUBLISHABLE_OR_ANON_KEY"
+APP_URL = "http://localhost:8501"
+GOOGLE_LOGIN_ENABLED = "0"
+```
+
+Replace the placeholders with the correct values from your Supabase project.
+
+Use `GOOGLE_LOGIN_ENABLED = "1"` only after Google OAuth has been configured, if you intend to use Google sign-in.
+
+**Never commit your real secrets to GitHub.**
+
+### 5. Set Up the Database
+
+1. Open your Supabase project.
+2. Navigate to **SQL Editor**.
+3. Open `database/schema.sql` from the repository.
+4. Execute the complete schema script in the correct project.
+5. Verify that the required tables and RLS policies were created successfully.
+
+Back up existing data before applying schema changes to an existing database. The script's `CREATE TABLE IF NOT EXISTS` statements do not automatically add missing columns to tables that already exist.
+
+### 6. Run the Application
+
+```bash
 streamlit run app.py
 ```
-Without those values the app shows a setup screen; it never fakes a login.
 
-## 4. Deploy on Streamlit Community Cloud
+Streamlit will display a local URL, typically:
 
-1. Push this folder to a GitHub repository (`.gitignore` already excludes `.env` and `secrets.toml`).
-2. share.streamlit.io > **Create app** > pick the repo, branch and `app.py`.
-3. App > Settings > **Secrets**: paste the contents of `.streamlit/secrets.toml.example` with real values. Set `APP_URL` to the final public URL.
-4. Add that exact URL to Supabase **Site URL** / **Redirect URLs** (step 1.4) and to Google's JavaScript origins (step 2.2).
-5. Local vs production: local uses `http://localhost:8501`; production uses your `https://...streamlit.app` URL. Only the Google redirect URI (the Supabase callback) is the same in both.
-
-## 5. Tests
-
-```bash
-pip install -r requirements.txt
-python -m pytest -q
+```text
+http://localhost:8501
 ```
-No credentials needed for the 60 unit/UI tests. For the optional database-level isolation test, create two throwaway confirmed users in a non-production project and export `FINLIFE_TEST_EMAIL_A/PASSWORD_A/EMAIL_B/PASSWORD_B` (plus `SUPABASE_URL`, `SUPABASE_ANON_KEY`) before running `pytest tests/test_rls_integration.py`.
 
-To look at the UI without Supabase: `FINLIFE_THEME=dark streamlit run tests/_harness.py` (stub login, in-memory demo data, test use only).
+Open the URL in your browser to use the application.
 
-## 6. Acceptance checklist (run this on your deployment)
+## 🔐 Environment Configuration
 
-1. Register with email + password; receive the verification email; verify; sign in.
-2. Sign out, then "Continue with Google" with a different account.
-3. Record income and several expenses; refresh the browser (you stay signed in), sign out and in again, and confirm the data persists. Reboot the app in Streamlit Cloud and confirm it still does.
-4. Set budgets; confirm the dashboard and budget bars move.
-5. After 3 months of data (or an imported CSV) open Analytics.
-6. Create a car goal; compare the required monthly amount with your surplus; try the Investment Planner, Emergency Fund and Net Worth pages.
-7. Export CSV; switch to Dark in Settings and navigate/refresh.
-8. Sign in as user B and confirm user A's data is invisible; run the RLS integration test.
-9. Sign out; open a deep link such as `?page=transactions` and confirm you get the sign-in screen.
-10. Forgot password: request a link, open it, set a new password.
+FinLife uses Streamlit secrets for configuration.
 
-## Security model
+| Variable | Description |
+|---|---|
+| `SUPABASE_URL` | URL of the Supabase project |
+| `SUPABASE_ANON_KEY` | Publishable key or legacy `anon` key |
+| `APP_URL` | Base URL of the deployed or local application |
+| `GOOGLE_LOGIN_ENABLED` | Enables or disables Google login according to the application code |
 
-- Passwords go to Supabase Auth only; never stored, logged or kept in `st.session_state`.
-- Every protected run calls `auth.current_session()`: refreshes tokens before expiry, re-validates with Supabase every 5 minutes, signs out on failure. Setting `st.session_state` by hand cannot authenticate (tested).
-- Each session's database client carries that user's JWT, so Row Level Security applies; `Repo` additionally forces `user_id` on inserts and scopes updates/deletes, and composite foreign keys block cross-user references.
-- OAuth and password reset use PKCE; the verifier is held server-side, single-use, 15-minute TTL (single-process assumption, true on Community Cloud). Tokens are never put in query parameters.
-- "Stay signed in" stores Supabase's rotating, revocable refresh token in a `SameSite=Lax` (and `Secure` on HTTPS) cookie. Streamlit cannot set HttpOnly cookies, so an XSS bug would expose it; set `REMEMBER_SESSION = "0"` to disable. All user text is HTML-escaped before rendering; CSV exports neutralise spreadsheet formulas.
-- Cached data is keyed by `(user_id, data_version)`; per-user clients are never stored in shared resources.
+The variable `SUPABASE_ANON_KEY` is retained for compatibility with the application's configuration. A modern Supabase publishable key can be used if the application passes it correctly to the Supabase client.
 
-## Known limits and caveats
+Do not use a Supabase secret key or legacy `service_role` key as the client-side application key.
 
-- **Theme CSS is tied to Streamlit's DOM.** Native widgets follow your OS via `[theme.light]/[theme.dark]` in `config.toml`; explicit Light/Dark and the app's components use CSS keyed on `data-testid` attributes (Streamlit 1.66 replaced BaseWeb, which broke the first version of this CSS). Re-check dark mode after upgrading Streamlit; `requirements.txt` caps it below 2.0.
-- Email verification links land on the app's home page; you then sign in (the link does not auto-sign-in).
-- Goal feasibility uses average monthly *savings* (income minus spending) over the last three complete months as the "surplus".
-- Deleting the sign-in account itself needs the Supabase dashboard (or a service-role operation); in-app "Erase everything" removes all financial data.
-- Terms/privacy text in the register screen is a placeholder summary. Replace it with real legal text before public launch.
-- Indian-specific rules (tax, deposit insurance, product limits) are deliberately not hard-coded; the planner links to RBI, SEBI, AMFI and the Income Tax Department instead.
-- Not financial advice; no live prices or bank connections; no trades.
+## ☁️ Deployment
+
+FinLife is deployed on Streamlit Community Cloud.
+
+**Live application:** [Open FinLife](https://iatharvab-finlife.streamlit.app/)
+
+To deploy your own instance:
+
+1. Push the project to a GitHub repository.
+2. Open [Streamlit Community Cloud](https://share.streamlit.io/).
+3. Connect your GitHub account.
+4. Select the repository and branch.
+5. Set the main file path to `app.py`.
+6. Configure the required secrets in the app settings.
+7. Deploy the application.
+8. Configure the Supabase Site URL and allowed redirect URLs to match the deployed application.
+
+## 🔒 Security
+
+Because FinLife stores personal financial information, security is an important part of its design.
+
+- Use Supabase authentication for user identity.
+- Enable RLS on all tables containing user-specific financial data.
+- Restrict database policies using the authenticated user's ID.
+- Never expose database secret keys in client code or public repositories.
+- Store credentials in Streamlit secrets or local environment configuration.
+- Avoid sharing authentication URLs containing access or refresh tokens.
+- Validate database permissions and user isolation before using real financial data.
+
+RLS policies must be tested carefully; enabling RLS alone does not guarantee that every table has the correct access rules.
+
+## 🗺️ Future Improvements
+
+Potential areas for future development include:
+
+- Enhanced financial dashboards and spending visualizations.
+- Monthly and yearly financial reports.
+- CSV import and export.
+- Automated recurring transaction processing.
+- More detailed savings and investment projections.
+- Improved mobile responsiveness.
+- Additional financial insights and spending analysis.
+- Expanded testing and error handling.
+
+## 🤝 Contributing
+
+Contributions, bug reports, and suggestions are welcome.
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Make your changes.
+4. Test the application locally.
+5. Submit a pull request describing your changes.
+
+For major changes, open an issue first to discuss the proposed improvement.
+
+## 📄 License
+
+No license has been specified here. Add a `LICENSE` file to your repository if you want to define how others may use, modify, and distribute this project.
+
+---
+
+<p align="center">
+  Built with ❤️ using Python, Streamlit, and Supabase.
+  <br/>
+  <a href="https://iatharvab-finlife.streamlit.app/">Try FinLife Live</a>
+</p>
